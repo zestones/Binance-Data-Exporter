@@ -46,6 +46,37 @@ OUTPUT_FOLDER = './data'    # The default folder where the data will be exported
 #################################################################################
 # ############################################################################# #
 
+# ----------------------------------------------------------------------------- #
+#                            * USAGE FUNCTION *                                 #
+# ----------------------------------------------------------------------------- #
+
+def usage(program_name: str) -> None:
+    """
+    Print the usage of the program
+    param program_name: The name of the program
+    return: None
+    """
+    
+    headers = [f"{Style.BRIGHT}Option{Style.NORMAL}", f"{Style.BRIGHT}Description{Style.NORMAL}", 
+               f"{Style.BRIGHT}Possible Values{Style.NORMAL}", f"{Style.BRIGHT}Default Values{Style.NORMAL}"]
+    rows = [
+        ["-i, --interval", "The interval of the data", "1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M", f"{interval}"],
+        ["-p, --pair", "The pair of coin (refer to the binance symbol list)", "BTCUSDT, ETHUSDT, etc.", f"{symbol}"],
+        ["-l, --limit", "The limit of the data per request", "1, 2, ..., 1000 (Should be integer)", f"{limit}"],
+        ["-s, --start-time", "The start time of the data", "YYYY_MM_DD", f"{timestamp_to_date_format(start_time, '%Y_%m_%d') if start_time else 'None'}"],
+        ["-e, --end-time", "The end time of the data", "YYYY_MM_DD", f"{timestamp_to_date_format(end_time, '%Y_%m_%d')}"],
+        ["-o, --output-folder", "The folder where the data will be exported", "Path", f"{OUTPUT_FOLDER}"]
+    ]
+    
+    print(f"{Fore.MAGENTA}Usage: {program_name} [OPTIONS]{Style.RESET_ALL}")
+    print(tabulate(rows, headers=headers, tablefmt="fancy_grid"), end='\n\n')
+    print(f"{Fore.RED}ATTENTION: Make sure to not exceed the number of requests allowed by the API, when configuring the {Style.BRIGHT}`limit`{Style.NORMAL} and {Style.BRIGHT}`interval`{Style.NORMAL} parameters.{Fore.RESET}", end='\n\n')
+    print(f"{Fore.YELLOW}NOTE: if you don't specify a start time for your request, it will use the earliest available data for the requested time interval.{Fore.RESET}")
+    print(f"Checkout the Binance API documentation for more information: {Fore.CYAN}{Style.BRIGHT}https://binance-docs.github.io/apidocs/spot/en/{Style.NORMAL}{Fore.RESET}", end='\n\n')
+
+    print(f"{Style.BRIGHT}Example:{Style.NORMAL} {Fore.MAGENTA}{program_name}{Fore.RESET}{Style.BRIGHT} -l 10 -i 1h -p ETHUSDT -s 2018_01_15 -e 2018_01_16 -o ./data/eth_usdt/{Style.NORMAL}")
+    exit(0)
+
 
 def export_data(data: list) -> None:
     """
@@ -61,10 +92,14 @@ def export_data(data: list) -> None:
     if not os.path.exists(OUTPUT_FOLDER): os.makedirs(OUTPUT_FOLDER)
     filepath = os.path.join(OUTPUT_FOLDER, filename)
     
+    if os.path.exists(filepath):
+        response = input(f"{Fore.YELLOW}WARNING: The file {Fore.BLUE}{Style.BRIGHT}{filepath}{Style.NORMAL}{Fore.YELLOW} already exists. Do you want to overwrite it? [y/n]{Fore.RESET} ")
+        if response.lower() != 'y': return
+        
     with open(filepath, 'w') as file:
         json.dump(data, file, indent=2)
-        
-    print(f"END: Data exported to {Fore.CYAN}{Style.BRIGHT}{filepath}{Style.NORMAL}{Fore.RESET}")
+    
+    print(f"\n{Fore.GREEN}> END:{Fore.RESET} Data exported to {Fore.BLUE}{Style.BRIGHT}{filepath}{Style.NORMAL}{Fore.RESET}")
         
 
 def timestamp_to_date_format(timestamp: int, format='%Y-%m-%d') -> str:
@@ -108,7 +143,7 @@ def request_data() -> list:
     return: The retrieved data from the API
     """
     
-    print(f"START: Requesting data from {Style.BRIGHT}{url}{Style.NORMAL}...")
+    print(f"\n{Fore.GREEN}> START:{Fore.RESET} Requesting data from: {Fore.BLUE}{Style.BRIGHT}{url+endpoint}{Style.NORMAL}{Fore.RESET}")
 
     data = []
     while True:
@@ -129,28 +164,13 @@ def request_data() -> list:
             
     return data
 
-def usage(program_name: str) -> None:
-    headers = [f"{Style.BRIGHT}Option{Style.NORMAL}", f"{Style.BRIGHT}Description{Style.NORMAL}", f"{Style.BRIGHT}Possible Values{Style.NORMAL}", f"{Style.BRIGHT}Default Values{Style.NORMAL}"]
-    rows = [
-        ["-i, --interval", "The interval of the data", "1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M", f"{interval}"],
-        ["-p, --pair", "The pair of coin (refer to the binance symbol list)", "BTCUSDT, ETHUSDT, etc.", f"{symbol}"],
-        ["-l, --limit", "The limit of the data per request", "1, 2, ..., 1000 (Should be integer)", f"{limit}"],
-        ["-s, --start-time", "The start time of the data", "YYYY_MM_DD", f"{timestamp_to_date_format(start_time, '%Y_%m_%d') if start_time else 'None'}"],
-        ["-e, --end-time", "The end time of the data", "YYYY_MM_DD", f"{timestamp_to_date_format(end_time, '%Y_%m_%d')}"],
-        ["-o, --output-folder", "The folder where the data will be exported", "Path", f"{OUTPUT_FOLDER}"]
-    ]
-    
-    print(f"{Fore.MAGENTA}Usage: {program_name} [OPTIONS]{Style.RESET_ALL}")
-    print(tabulate(rows, headers=headers, tablefmt="fancy_grid"), end='\n\n')
-    print(f"{Fore.RED}ATTENTION: Make sure to not exceed the number of requests allowed by the API, when configuring the {Style.BRIGHT}`limit`{Style.NORMAL} and {Style.BRIGHT}`interval`{Style.NORMAL} parameters.{Fore.RESET}", end='\n\n')
-    print(f"{Fore.YELLOW}NOTE: if you don't specify a start time for your request, it will use the earliest available data for the requested time interval.{Fore.RESET}")
-    print(f"Checkout the Binance API documentation for more information: {Fore.CYAN}{Style.BRIGHT}https://binance-docs.github.io/apidocs/spot/en/{Style.NORMAL}{Fore.RESET}", end='\n\n')
-
-    print(f"{Style.BRIGHT}Example:{Style.NORMAL} {Fore.MAGENTA}{program_name}{Fore.RESET}{Style.BRIGHT} -l 10 -i 1h -p ETHUSDT -s 2018_01_15 -e 2018_01_16 -o ./data/eth_usdt/{Style.NORMAL}")
-    exit(0)
-
 
 def parse_command_line_args(argv: list) -> None:
+    """
+    Parse the command line arguments and update the default values if necessary
+    param argv: The command line arguments
+    return: None
+    """
     
     program_name = argv[0]
     argv = argv[1:]
@@ -186,8 +206,6 @@ def parse_command_line_args(argv: list) -> None:
 def main(argv):
 
     parse_command_line_args(argv)
-    print(f"{Fore.GREEN}Parameters:{Fore.RESET}")
-    print(json.dumps(params, indent=4, sort_keys=True))
     data = request_data()
     
     if len(data) == 0:
