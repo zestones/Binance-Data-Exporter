@@ -22,13 +22,13 @@ python binance_data_exporter.py [OPTIONS]
 Bellow the list of available options you can use to customize the request to the Binance API:
 
 | Option | Description | Possible Values | Default Value |
-| :------ | :----------- | :--------------- | :------------- |
-| `-i`, `--interval` | The interval of the data | 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M | `interval` |
-| `-p`, `--pair` | The pair of coin (refer to the binance symbol list) | BTCUSDT, ETHUSDT, etc. | `symbol` |
-| `-l`, `--limit` | The limit of the data per request | 1, 2, ..., 1000 (Should be integer) | `limit` |
+| :---------------- | :------------ | :--------- | :------- |
+| `-i`, `--interval` | The interval of the data | 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M | `1d` |
+| `-p`, `--pair` | The pair of coin (refer to the binance symbol list) | BTCUSDT, ETHUSDT, etc. | `BTCUSDT` |
+| `-l`, `--limit` | The limit of the data per request | 1, 2, ..., 1000 (Should be integer) | `500` |
 | `-s`, `--start-time` | The start time of the data | YYYY_MM_DD | None |
-| `-e`, `--end-time` | The end time of the data | YYYY_MM_DD | `timestamp_to_date_format(end_time, '%Y_%m_%d')` |
-| `-o`, `--output-folder` | The folder where the data will be exported | Path | `OUTPUT_FOLDER` |
+| `-e`, `--end-time` | The end time of the data | YYYY_MM_DD | 2023_04_07 |
+| `-o`, `--output-folder` | The folder where the data will be exported | Path | `./data` |
 
 > **NOTE** 
 > 
