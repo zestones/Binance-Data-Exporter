@@ -21,19 +21,20 @@ python binance_data_exporter.py [OPTIONS]
 
 Bellow the list of available options you can use to customize the request to the Binance API:
 
-| Option | Description | Possible Values | Default Value |
-| :---------------- | :------------ | :--------- | :------- |
-| `-i`, `--interval` | The interval of the data | 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M | `1d` |
-| `-p`, `--pair` | The pair of coin (refer to the binance symbol list) | BTCUSDT, ETHUSDT, etc. | `BTCUSDT` |
-| `-l`, `--limit` | The limit of the data per request | 1, 2, ..., 1000 (Should be integer) | `500` |
-| `-s`, `--start-time` | The start time of the data | YYYY_MM_DD | None |
-| `-e`, `--end-time` | The end time of the data | YYYY_MM_DD | 2023_04_07 |
-| `-o`, `--output-folder` | The folder where the data will be exported | Path | `./data` |
+| **Option**          | **Description**                   | **Possible Values**               | **Default Value** 	|
+|-------------------	|----------------------------------	|---------------------------------	|:-----------------:	|
+| `-i`,<br> `--interval`      	| The interval of the data                                                 	| 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M 	|        `1d`       	|
+| `-p`,<br> `--pair`          	| The pair of coin (refer to the binance symbol list)                      	| BTCUSDT, ETHUSDT, etc                                         	|     `BTCUSDT`     	|
+| `-l`,<br> `--limit`         	| The limit of the data per request \| 1, 2, ..., 1000 (Should be integer) 	| 1, 2, ..., 1000 (Should be integer)                           	|       `500`       	|
+| `-s`,<br> `--start-time`    	| The start time of the data                                               	| YYYY_MM_DD                                                    	|        None       	|
+| `-e`,<br> `--end-time`      	| The end time of the data                                                 	| YYYY_MM_DD                                                    	|      `TODAY`      	|
+| `-o`,<br> `--output-folder` 	| The folder where the data will be exported                               	| Path                                                          	|      `./data`     	|
+
 
 > **NOTE** 
 > 
-> If you don't specify a start time for your request, it will use the earliest available data for the requested time interval.
-
+> - If you don't specify a start time for your request, it will use the earliest available data for the requested time interval.
+> - If the end-time is not specified the date of the day will be choosed by default.
 ### Examples
 
 To retrieve data for ETHUSDT from 2018-01-15 to 2018-01-16 with an interval of 1 hour, a limit of 10, and export the data to `./data/eth_usdt/`, use the following command:
