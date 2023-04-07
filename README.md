@@ -43,7 +43,7 @@ where `start_date` and `end_date` are the start and end dates of the data retrie
 
 ## API Limits and Maximum Number of Requests
 
-Please note that Binance API has certain limits on the number of requests that can be made within a specific time frame. For example, there is a limit of 300 connections per attempt every 5 minutes per IP, and a limit of 5 incoming messages per second for WebSocket connections.
+Please note that Binance API has certain limits on the number of requests that can be made within a specific time frame. 
 
 It is important to be mindful of these limits when making requests to avoid being disconnected or banned. Make sure to not exceed the number of requests allowed by the API, when configuring the `limit` and `interval` parameters in the script.
 

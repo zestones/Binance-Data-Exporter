@@ -1,7 +1,12 @@
+#!/usr/bin/env python3
+
+from colorama import Fore, Style
+from tabulate import tabulate
 from datetime import datetime
 import requests
-from colorama import Fore, Style
 
+import getopt
+import time
 import json
 import sys
 import os
@@ -12,15 +17,18 @@ import os
 #                              CONFIGURATION                                    #   
 # ----------------------------------------------------------------------------- #                               
 
-interval = '4h'     # Specify the interval, for example 1 day
-symbol = 'BTCUSDT'  # Specify the symbol, for example BTCUSDT
-limit = 1000        # Specify the limit of the data per request
+interval = '1d'                 # Specify the interval, for example 1 day
+symbol = 'BTCUSDT'              # Specify the symbol, for example BTCUSDT
+limit = 500                     # Specify the limit of the data per request
+start_time = None               # Specify the start time of the data, if None, the first data point available will be used
+end_time = int(time.time() * 1000)   # Specify the end time of the data
 
 url = 'https://api3.binance.com'    # The base URL of the API
 endpoint = '/api/v3/klines'         # The endpoint of the API
 
 # The key of the parameters of the request 
 START_TIME = 'startTime'
+END_TIME = 'endTime'
 INTERVAL = 'interval'
 SYMBOL = 'symbol'
 LIMIT = 'limit'
@@ -30,10 +38,11 @@ params = {
     SYMBOL: symbol,
     INTERVAL: interval,
     LIMIT: limit,
-    # START_TIME: 0, # 0 means the first data point available
+    END_TIME: end_time
 }
 
-OUTPUT_FOLDER = './data' # The folder where the data will be exported
+OUTPUT_FOLDER = './data'    # The default folder where the data will be exported
+
 #################################################################################
 # ############################################################################# #
 
@@ -54,6 +63,8 @@ def export_data(data: list) -> None:
     
     with open(filepath, 'w') as file:
         json.dump(data, file, indent=2)
+        
+    print(f"END: Data exported to {Fore.CYAN}{Style.BRIGHT}{filepath}{Style.NORMAL}{Fore.RESET}")
         
 
 def timestamp_to_date_format(timestamp: int, format='%Y-%m-%d') -> str:
@@ -118,13 +129,71 @@ def request_data() -> list:
             
     return data
 
+def usage(program_name: str) -> None:
+    headers = [f"{Style.BRIGHT}Option{Style.NORMAL}", f"{Style.BRIGHT}Description{Style.NORMAL}", f"{Style.BRIGHT}Possible Values{Style.NORMAL}", f"{Style.BRIGHT}Default Values{Style.NORMAL}"]
+    rows = [
+        ["-i, --interval", "The interval of the data", "1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M", f"{interval}"],
+        ["-p, --pair", "The pair of coin (refer to the binance symbol list)", "BTCUSDT, ETHUSDT, etc.", f"{symbol}"],
+        ["-l, --limit", "The limit of the data per request", "1, 2, ..., 1000 (Should be integer)", f"{limit}"],
+        ["-s, --start-time", "The start time of the data", "YYYY_MM_DD", f"{timestamp_to_date_format(start_time, '%Y_%m_%d') if start_time else 'None'}"],
+        ["-e, --end-time", "The end time of the data", "YYYY_MM_DD", f"{timestamp_to_date_format(end_time, '%Y_%m_%d')}"],
+        ["-o, --output-folder", "The folder where the data will be exported", "Path", f"{OUTPUT_FOLDER}"]
+    ]
+    
+    print(f"{Fore.MAGENTA}Usage: {program_name} [OPTIONS]{Style.RESET_ALL}")
+    print(tabulate(rows, headers=headers, tablefmt="fancy_grid"), end='\n\n')
+    print(f"{Fore.RED}ATTENTION: Make sure to not exceed the number of requests allowed by the API, when configuring the {Style.BRIGHT}`limit`{Style.NORMAL} and {Style.BRIGHT}`interval`{Style.NORMAL} parameters.{Fore.RESET}", end='\n\n')
+    print(f"{Fore.YELLOW}NOTE: if you don't specify a start time for your request, it will use the earliest available data for the requested time interval.{Fore.RESET}")
+    print(f"Checkout the Binance API documentation for more information: {Fore.CYAN}{Style.BRIGHT}https://binance-docs.github.io/apidocs/spot/en/{Style.NORMAL}{Fore.RESET}", end='\n\n')
+
+    print(f"{Style.BRIGHT}Example:{Style.NORMAL} {Fore.MAGENTA}{program_name}{Fore.RESET}{Style.BRIGHT} -l 10 -i 1h -p ETHUSDT -s 2018_01_15 -e 2018_01_16 -o ./data/eth_usdt/{Style.NORMAL}")
+    exit(0)
+
+
+def parse_command_line_args(argv: list) -> None:
+    
+    program_name = argv[0]
+    argv = argv[1:]
+    try:
+        opts, _ = getopt.getopt(argv,"hi:p:l:s:e:o:",["interval=","pair=","limit=","start_time=","end_time=","output_folder="])
+    except getopt.GetoptError:
+        usage(program_name)
+
+    # We rewrite the default values with the command line arguments
+    global OUTPUT_FOLDER
+    global params
+                
+    for opt, arg in opts:
+        if opt == '-h':
+            usage(program_name)
+        elif opt in ("-i", "--interval"):
+            params[INTERVAL] = arg
+        elif opt in ("-p", "--pair"):
+            params[SYMBOL] = arg
+        elif opt in ("-l", "--limit"):
+            params[LIMIT] = int(arg)
+        elif opt in ("-s", "--start_time"):
+            params[START_TIME] = int(datetime.strptime(arg, '%Y_%m_%d').timestamp() * 1000)
+        elif opt in ("-e", "--end_time"):
+            params[END_TIME] = int(datetime.strptime(arg, '%Y_%m_%d').timestamp() * 1000)
+        elif opt in ("-o", "--output_folder"):
+            OUTPUT_FOLDER = arg
+
 
 # ------------------------------------------------------------------------------ #
 #                               * MAIN *                                         #
 # ------------------------------------------------------------------------------ #
-
 def main(argv):
+
+    parse_command_line_args(argv)
+    print(f"{Fore.GREEN}Parameters:{Fore.RESET}")
+    print(json.dumps(params, indent=4, sort_keys=True))
     data = request_data()
+    
+    if len(data) == 0:
+        print(f"{Fore.RED}No data Found{Fore.RESET}")
+        exit(0)
+
     print("=========================================")
     print(f" {Fore.GREEN}Retrieved {Style.BRIGHT}{len(data)}{Style.NORMAL} data points{Fore.RESET}")
     print("=========================================")
@@ -132,4 +201,4 @@ def main(argv):
     export_data(data)
 
 if __name__ == '__main__':
-    main(sys.argv[1:])
+    main(sys.argv)
