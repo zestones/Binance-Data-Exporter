@@ -1,0 +1,47 @@
+name: Release Package
+on:
+  push:
+    branches:
+      - release-packages
+      - main
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Git user
+        run: |
+          git config --global user.email "idrissbenguezzou@gmail.com"
+          git config --global user.name "zestones"
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+          pip install bumpversion
+
+      - name: Build package
+        run: |
+          bumpversion patch  # Or `minor` or `major`, depending on the type of release
+          python setup.py sdist bdist_wheel
+
+      - name: Publish package
+        env:
+          TWINE_USERNAME: ${{ secrets.TWINE_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.TWINE_PASSWORD }}
+        run: twine upload dist/*
+
+      - name: Update version in bumpversion.cfg
+      run: |
+        new_version=$(bumpversion --dry-run --list patch | grep '^new_version=' | cut -d= -f2)
+        sed -i "s/version=.*/version='$new_version',/" bumpversion.cfg
+        git add bumpversion.cfg
+        git commit -m "Bump version to $new_version"
+        git push
