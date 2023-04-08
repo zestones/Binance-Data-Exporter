@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import configparser
 
 config = configparser.ConfigParser()
-config.read("bumpversion.cfg")
+config.read(".bumpversion.cfg")
 
 current_version = config["bumpversion"]["current_version"]
 
