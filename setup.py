@@ -1,10 +1,17 @@
 from setuptools import setup, find_packages
+import configparser
+
+config = configparser.ConfigParser()
+config.read("bumpversion.cfg")
+
+current_version = config["bumpversion"]["current_version"]
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name='binance_data_exporter',
+    version=current_version,
     description='A tool for exporting in JSON format the historical data of a symbol from Binance',
     author='zestones',
     author_email='idrissbenguezzou@gmail.com',
@@ -19,7 +26,6 @@ setup(
         'colorama',
         'tabulate',
     ],
-
     long_description=long_description,
     long_description_content_type="text/markdown"
 )
