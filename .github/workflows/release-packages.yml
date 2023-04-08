@@ -39,9 +39,9 @@ jobs:
         run: twine upload dist/*
 
       - name: Update version in bumpversion.cfg
-      run: |
-        new_version=$(bumpversion --dry-run --list patch | grep '^new_version=' | cut -d= -f2)
-        sed -i "s/version=.*/version='$new_version',/" bumpversion.cfg
-        git add bumpversion.cfg
-        git commit -m "Bump version to $new_version"
-        git push
+        run: |
+          new_version=$(bumpversion --dry-run --list patch | grep '^new_version=' | cut -d= -f2)
+          sed -i "s/version=.*/version='$new_version',/" bumpversion.cfg
+          git add bumpversion.cfg
+          git commit -m "Bump version to $new_version"
+          git push
