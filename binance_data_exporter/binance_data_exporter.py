@@ -202,9 +202,13 @@ def parse_command_line_args(argv: list) -> None:
 # ------------------------------------------------------------------------------ #
 #                               * MAIN *                                         #
 # ------------------------------------------------------------------------------ #
-def main(argv):
-
-    parse_command_line_args(argv)
+def main(argv=sys.argv) -> None:
+    """
+    Main function
+    param argv: The command line arguments
+    """
+    
+    if argv is not None: parse_command_line_args(argv)
     data = request_data()
     
     if len(data) == 0:
