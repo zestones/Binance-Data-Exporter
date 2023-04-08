@@ -2,14 +2,18 @@
 
 This Python script allows you to retrieve historical data from Binance API and export it to a JSON file. The data can be retrieved for any specified symbol (e.g. BTCUSDT) and interval (e.g. 1m, 1h, 1d) for a given period of time.
 
-## Configuration
+## Installation
 
-Before running the script, you need to configure the following parameters in the script:
+1. Install it via pip by running the following command in your terminal:
+````bash
+pip install binance-data-exporter
+````
+2. Check out the project on PyPI at https://pypi.org/project/binance-data-exporter/.
 
-- `interval`: The interval of the data, e.g., 1 day, 4 hours, etc.
-- `symbol`: The symbol of the cryptocurrency, e.g., BTCUSDT, ETHUSDT, etc.
-- `limit`: The number of data points per request.
-- `OUTPUT_FOLDER`: The folder where the data will be exported.
+3. Clone the project repository from GitHub by running the following command in your terminal:
+````bash
+git clone git@github.com:zestones/Binance-Data-Exporter.git
+````
 
 ## Usage
 
@@ -23,9 +27,10 @@ Bellow the list of available options you can use to customize the request to the
 
 | **Option**          | **Description**                   | **Possible Values**               | **Default Value** 	|
 |-------------------	|----------------------------------	|---------------------------------	|:-----------------:	|
+| `-h`,<br> `--help`          	| Show the help message and exit  	|                          	|                   	|	
 | `-i`,<br> `--interval`      	| The interval of the data                                                 	| 1m, 3m, 5m, 15m, 30m, 1h, 2h, 4h, 6h, 8h, 12h, 1d, 3d, 1w, 1M 	|        `1d`       	|
 | `-p`,<br> `--pair`          	| The pair of coin (refer to the binance symbol list)                      	| BTCUSDT, ETHUSDT, etc                                         	|     `BTCUSDT`     	|
-| `-l`,<br> `--limit`         	| The limit of the data per request \| 1, 2, ..., 1000 (Should be integer) 	| 1, 2, ..., 1000 (Should be integer)                           	|       `500`       	|
+| `-l`,<br> `--limit`         	| The limit of the data per request  	| 1, 2, ..., 1000 (Should be integer)                           	|       `500`       	|
 | `-s`,<br> `--start-time`    	| The start time of the data                                               	| YYYY_MM_DD                                                    	|        None       	|
 | `-e`,<br> `--end-time`      	| The end time of the data                                                 	| YYYY_MM_DD                                                    	|      `TODAY`      	|
 | `-o`,<br> `--output-folder` 	| The folder where the data will be exported                               	| Path                                                          	|      `./data`     	|
@@ -35,6 +40,7 @@ Bellow the list of available options you can use to customize the request to the
 > 
 > - If you don't specify a start time for your request, it will use the earliest available data for the requested time interval.
 > - If the end-time is not specified the date of the day will be choosed by default.
+> - If you dont provide parameters, the script will use the default values specified.
 ### Examples
 
 To retrieve data for ETHUSDT from 2018-01-15 to 2018-01-16 with an interval of 1 hour, a limit of 10, and export the data to `./data/eth_usdt/`, use the following command:
@@ -52,9 +58,7 @@ The script requires the following dependencies:
 
 - requests
 - colorama
-- datetime
 - tabulate
-- json
 
 You can install the dependencies using the following command:
 
