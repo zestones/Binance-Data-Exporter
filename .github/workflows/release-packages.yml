@@ -28,7 +28,7 @@ jobs:
 
       - name: Build package
         run: |
-          bumpversion --allow-dirty minor  # Or `minor` or `major`, depending on the type of release
+          bumpversion --allow-dirty patch  # Or `minor` or `major`, depending on the type of release
           python setup.py sdist bdist_wheel
 
       - name: Publish package

@@ -113,11 +113,11 @@ def timestamp_to_date_format(timestamp: int, format='%Y-%m-%d') -> str:
     return datetime.fromtimestamp(timestamp / 1000).strftime(format)
 
 
-def extract_data(response: list) -> tuple:
+def extract_data(response: list) -> dict:
     """
     Extract the data from the API response
     param response: The response of the API
-    return: The date and the values
+    return: The extracted data as a dictionary
     """
     
     date = timestamp_to_date_format(response[0], '%Y-%m-%d %H:%M:%S')
@@ -134,7 +134,7 @@ def extract_data(response: list) -> tuple:
         'taker_buy_quote_asset_volume': response[10],
     }
     
-    return date, values
+    return { 'date': date, **values }
 
 def request_data() -> list:
     """
@@ -153,8 +153,7 @@ def request_data() -> list:
             
             if len(klines) == 0: break
             for kline in klines:
-                date, values = extract_data(kline)
-                data.append({'date': date, 'values': values})
+                data.append(extract_data(kline))
                 
             params[START_TIME] = klines[-1][0] + 1 # define the start time for the next request
             print(f" - Requesting data from {Style.BRIGHT}{timestamp_to_date_format(params[START_TIME], '%Y-%m-%d %H:%M:%S')}{Style.NORMAL}")
