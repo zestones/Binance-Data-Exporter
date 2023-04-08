@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
 
 setup(
     name='binance_data_exporter',
-    version='0.1.9',  # current_version
-    description='A tool for exporting in JSON format the historical data of a symbol from Binance',
+    version='0.2.0',  # current_version
+    description='A tool for exporting in JSON the historical data of a symbol from Binance',
     author='zestones',
     author_email='idrissbenguezzou@gmail.com',
     packages=find_packages(),
