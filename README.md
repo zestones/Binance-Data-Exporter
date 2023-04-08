@@ -1,4 +1,4 @@
-# Binance API Data Retrieval
+# Binance API Data Exporter
 
 This Python script allows you to retrieve historical data from Binance API and export it to a JSON file. The data can be retrieved for any specified symbol (e.g. BTCUSDT) and interval (e.g. 1m, 1h, 1d) for a given period of time.
 
