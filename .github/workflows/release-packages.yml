@@ -3,10 +3,6 @@ name: Release PyPi Package
 
 # Only run on pull request merges
 on:
-  push:
-    branches:
-      - fix-PyPi-releases
-      
   pull_request:
     types: [closed]
     branches:
